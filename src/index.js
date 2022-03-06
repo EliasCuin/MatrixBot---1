@@ -1,35 +1,65 @@
 const loadWebsite = require('./loadWebsite.js');
 const bot = require('./bot.js');
 const settingsChanger = require('./settingsChanger.js');
+const utils = require('./utils.js');
 
-const interval = 1800; // 30 Minuten
+const interval = settingsChanger.getInterval();
+const website = settingsChanger.getWebsite();
 
-async function main() {
-  console.log('Connecting to Element . . .');
-  const content = await loadWebsite();
-  await bot.startClient();
+//Developper settings
+const connectToElement = true;
+const unknownSicherheitsStufeError = website.substring(website.length - 1);
+const editLastMessageInJson = false;
+// - - -
 
-  // bot.sendExploitMessage(bot.channels.botTest, {
-  //   sicherheitsstufe: '1',
-  //   content: 'Hello World'
-  // });
+async function start() {
+  console.log('Checking Website ...');
+  await loadWebsite(website);
+
+  console.log('Starting Element client');
+
+  if (connectToElement) await bot.startClient();
+
+  console.log('Starting Main Loop -> Interval:' + interval);
   mainLoop();
-  setInterval(mainLoop, 150000);
+  setInterval(mainLoop, interval);
 }
 
 async function mainLoop() {
-  const content = await loadWebsite();
+  //Logging Time for new Scan
+  utils.startScanningLogWithoutTime();
 
-  console.log(settingsChanger.getLastMessage().lastBotMessage);
-  console.log(content[0].content);
-  if (settingsChanger.getLastMessage().lastBotMessage != content[0].content) {
-    // New Message
-    settingsChanger.setLastMessage(content[0].content);
+  //Getting Content
+  console.log('Performing request to Website ... ');
+  const content = await loadWebsite(website);
+  //Get last Message
+  const lastMessage = settingsChanger.getLastMessage();
 
-    console.log('New Message Detected -> Sending Element Message . . .');
-    bot.sendExploitMessage(bot.channels.botTest, content[0]);
-    console.log('Element Message sended');
-  }
+  //Get missed messges
+  const missedMessages = utils.getMissedMessages(
+    lastMessage,
+    content.reverse()
+  );
+
+  if (missedMessages.length > 0) {
+    console.log(missedMessages.length.toString() + ' new Messages found:');
+
+    for (let e of missedMessages) {
+      utils.sleep(500);
+      if (e.sicherheitsstufe == undefined)
+        e.sicherheitsstufe = unknownSicherheitsStufeError;
+      console.log(e);
+      if (connectToElement) bot.sendExploitMessage(bot.channels.botTest, e);
+    }
+    if (editLastMessageInJson)
+      settingsChanger.setLastMessage(
+        missedMessages[missedMessages.length - 1].content
+      );
+  } else console.log('No messages found');
+
+  console.log('------------');
+  //
 }
-main();
+
+start();
 //mainLoop();

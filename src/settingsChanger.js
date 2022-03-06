@@ -1,11 +1,29 @@
 const fs = require('fs');
-const settingsPath = './src/settings.json';
+const settingsPath = './settings.json';
 
 exports.setLastMessage = (message) => {
-  fs.writeFileSync(settingsPath, '{ "lastBotMessage": "' + message + '" }');
+  const rawdata = fs.readFileSync(settingsPath);
+  const data = JSON.parse(rawdata.toString());
+  data.lastBotMessage = message;
+  fs.writeFileSync(settingsPath, JSON.stringify(data));
 };
 
 exports.getLastMessage = () => {
-  let rawdata = fs.readFileSync(settingsPath);
-  return JSON.parse(rawdata.toString());
+  const rawdata = fs.readFileSync(settingsPath);
+  return JSON.parse(rawdata.toString()).lastBotMessage;
+};
+
+exports.getWebsite = () => {
+  const rawdata = fs.readFileSync(settingsPath);
+  return JSON.parse(rawdata.toString()).website;
+};
+
+exports.getInterval = () => {
+  const rawdata = fs.readFileSync(settingsPath);
+  return JSON.parse(rawdata.toString()).interval_In_MS;
+};
+
+exports.getBotCredits = () => {
+  const rawdata = fs.readFileSync(settingsPath);
+  return JSON.parse(rawdata.toString()).bot_Credits;
 };

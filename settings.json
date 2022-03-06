@@ -1,0 +1,10 @@
+{
+  "lastBotMessage": "Microsoft Windows und Microsoft Windows Server: Mehrere Schwachstellen",
+  "website": "https://www.bsi.bund.de/SiteGlobals/Forms/Suche/BSI/Sicherheitswarnungen/Sicherheitswarnungen_Formular.html?cl2RespTargets_Risikostufe=5",
+  "interval_In_MS": 120000,
+  "bot_Credits": {
+    "homeserverUrl": "unknown",
+    "accessToken": "unknown",
+    "channel": "!CjwJfPIMJPjqgefELG:smartrx.ga"
+  }
+}
