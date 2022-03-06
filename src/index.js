@@ -9,7 +9,7 @@ const website = settingsChanger.getWebsite();
 //Developper settings
 const connectToElement = true;
 const unknownSicherheitsStufeError = website.substring(website.length - 1);
-const editLastMessageInJson = false;
+const editLastMessageInJson = true;
 // - - -
 
 async function start() {
